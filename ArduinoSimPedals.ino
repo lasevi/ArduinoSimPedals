@@ -11,7 +11,7 @@
  */
 
 // Change this if you want to enable / disable serial printing.
-#define DEBUG true
+#define DEBUG false
 
 // ArduinoJoystickLibrary by MHeironimus
 // https://github.com/MHeironimus/ArduinoJoystickLibrary
@@ -21,11 +21,11 @@
 
 // Refer to your board's manual to find it's ADC pins
 #define THROTTLE_POTENTIOMETER_PIN A0
-#define BRAKE_POTENTIOMETER_PIN A1
+//#define BRAKE_POTENTIOMETER_PIN A1
 #define JOYSTICK_THROTTLE_MIN_VALUE 0
 #define JOYSTICK_THROTTLE_MAX_VALUE 1023
-#define JOYSTICK_BRAKE_MIN_VALUE 0
-#define JOYSTICK_BRAKE_MAX_VALUE 1023
+//#define JOYSTICK_BRAKE_MIN_VALUE 0
+//#define JOYSTICK_BRAKE_MAX_VALUE 1023
 
 // Milliseconds per loop.
 #define LOOP_TIME 1
@@ -45,26 +45,26 @@ Joystick_ Joystick(
   false, // includeRudder
   true,  // includeThrottle
   false, // includeAccelerator
-  true,  // includeBrake
+  false,  // includeBrake
   false  // includeSteering
 ); 
 
 
 uint16_t throttle_position = 0;
 uint16_t throttle_position_lowpass = 0;
-uint16_t brake_position = 0;
-uint16_t brake_position_lowpass = 0;
+//uint16_t brake_position = 0;
+//uint16_t brake_position_lowpass = 0;
 
 
 void setup(){
   Joystick.begin(JOYSTICK_AUTO_SEND_STATE);
 
   Joystick.setThrottleRange(JOYSTICK_THROTTLE_MIN_VALUE, JOYSTICK_THROTTLE_MAX_VALUE);
-  Joystick.setBrakeRange(JOYSTICK_BRAKE_MIN_VALUE, JOYSTICK_BRAKE_MAX_VALUE);
+  //Joystick.setBrakeRange(JOYSTICK_BRAKE_MIN_VALUE, JOYSTICK_BRAKE_MAX_VALUE);
 
   // Rot really needed, as all pins are input by default
   pinMode(THROTTLE_POTENTIOMETER_PIN, INPUT);
-  pinMode(BRAKE_POTENTIOMETER_PIN, INPUT);
+  //pinMode(BRAKE_POTENTIOMETER_PIN, INPUT);
 
   #if DEBUG
     Serial.begin(9600);
@@ -73,14 +73,14 @@ void setup(){
 
 void loop(){
   throttle_position = analogRead(THROTTLE_POTENTIOMETER_PIN);
-  brake_position    = analogRead(BRAKE_POTENTIOMETER_PIN);
+  //brake_position    = analogRead(BRAKE_POTENTIOMETER_PIN);
 
   // Super simple low pass filter to get rid of some noise
   throttle_position_lowpass = 0.5 * throttle_position + 0.5 * throttle_position_lowpass;
-  brake_position_lowpass    = 0.5 * brake_position    + 0.5 * brake_position_lowpass;
+  //brake_position_lowpass    = 0.5 * brake_position    + 0.5 * brake_position_lowpass;
 
   Joystick.setThrottle(throttle_position_lowpass);
-  Joystick.setBrake(brake_position_lowpass);
+  //Joystick.setBrake(brake_position_lowpass);
 
   #if !JOYSTICK_AUTO_SEND_STATE
     Joystick.sendState();
@@ -91,10 +91,10 @@ void loop(){
     Serial.print(throttle_position);
     Serial.print(" thr_smooth: ");
     Serial.print(throttle_position_lowpass);
-    Serial.print(" brake: ");
-    Serial.print(brake_position);
-    Serial.print(" brk_smooth: ");
-    Serial.print(brake_position_lowpass);
+    //Serial.print(" brake: ");
+    //Serial.print(brake_position);
+    //Serial.print(" brk_smooth: ");
+    //Serial.print(brake_position_lowpass);
     Serial.println();
   #endif
 
